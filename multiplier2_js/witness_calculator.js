@@ -73,17 +73,22 @@ module.exports = async function builder(code, options) {
 
 class WitnessCalculator {
     constructor(instance, sanityCheck) {
+        console.log("*** WitnessCalculator constructor");
         this.instance = instance;
 
 	this.version = this.instance.exports.getVersion();
         this.n32 = this.instance.exports.getFieldNumLen32();
+        console.log("*** WitnessCalculator version=",
+                    this.version, "n32=", this.n32);
 
         this.instance.exports.getRawPrime();
         const arr = new Array(this.n32);
         for (let i=0; i<this.n32; i++) {
             arr[this.n32-1-i] = this.instance.exports.readSharedRWMemory(i);
         }
+        //console.log("*** WitnessCalculator prime arr", arr);
         this.prime = fromArray32(arr);
+        console.log("*** WitnessCalculator prime", this.prime);
 
         this.witnessSize = this.instance.exports.getWitnessSize();
 
@@ -95,6 +100,7 @@ class WitnessCalculator {
     }
 
     async _doCalculateWitness(input, sanityCheck) {
+        console.log("*** _doCalculateWitness input=", input);
 	//input is assumed to be a map from signals to arrays of bigints
         this.instance.exports.init((this.sanityCheck || sanityCheck) ? 1 : 0);
         const keys = Object.keys(input);
@@ -120,6 +126,7 @@ class WitnessCalculator {
     }
 
     async calculateWitness(input, sanityCheck) {
+        console.log("*** calculateWitness");
 
         const w = [];
 
@@ -157,6 +164,7 @@ class WitnessCalculator {
     
 
     async calculateWTNSBin(input, sanityCheck) {
+        console.log("*** calculateWTNSBin");
 
         const buff32 = new Uint32Array(this.witnessSize*this.n32+this.n32+11);
 	const buff = new  Uint8Array( buff32.buffer);
